@@ -82,9 +82,9 @@ $jest src/__tests__/your_test_file.js
 
 Vous pouvez vous connecter en utilisant les comptes:
 
-### administrateur :
+### administrateur : 
 ```
-utilisateur : admin@test.tld
+utilisateur : admin@test.tld 
 mot de passe : admin
 ```
 ### employé :

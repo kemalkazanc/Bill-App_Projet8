@@ -16,6 +16,7 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
+
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
@@ -23,9 +24,13 @@ export default class NewBill {
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
-    formData.append('email', email)
+    formData.append('email', email) 
 
-    this.store
+    // ajout d'une fonction pour vérifier le type du fichier
+    // bug fix 4
+    const authorizedFileType = ["image/jpeg", "image/jpg", "image/png"]
+    if(authorizedFileType.includes(file.type)) {
+      this.store
       .bills()
       .create({
         data: formData,
@@ -34,15 +39,20 @@ export default class NewBill {
         }
       })
       .then(({fileUrl, key}) => {
-        console.log(fileUrl)
+        //console.log(fileUrl)
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
+    } else {
+      return false
+    }
+
+    
   }
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+    // console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -57,11 +67,18 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending'
     }
+
+    // bug fix 4
+    if(!this.fileName) {
+      return
+    }
+
     this.updateBill(bill)
     this.onNavigate(ROUTES_PATH['Bills'])
   }
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store
